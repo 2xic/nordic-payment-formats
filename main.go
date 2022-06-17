@@ -8,6 +8,17 @@ import (
 )
 
 func main() {
-	fmt.Print(parser.Mul(2, 4))
-	ocr.Sum(2, 2)
+	path := ocr.Get_path(
+		"./test-files/ocr_nets_example.txt",
+	)
+	ocr_file := parser.Read_file(path)
+
+	fmt.Println(ocr_file)
+	transaction := ocr.Ocr_Parser(&parser.Parser{
+		Data: ocr_file,
+	})
+	fmt.Println(transaction)
+
+	//	fmt.Print(parser.Mul(2, 4))
+	//	ocr.Sum(2, 2)
 }

@@ -1,18 +1,16 @@
 package ocr
 
-import "testing"
-import "github.com/2xic/norwegian-payment-formats/parser"
+import (
+	"testing"
 
-func TestSum(t *testing.T) {
-	total := Sum(5, 5)
-	if total != 10 {
-		t.Errorf("Sum was incorrect, got: %d, want: %d.", total, 10)
-	}
-}
+	"github.com/2xic/norwegian-payment-formats/parser"
+)
 
-func TestMul(t *testing.T) {
-	total := parser.Mul(5, 5)
-	if total != 2 {
-		t.Errorf("Mul was incorrect, got: %d, want: %d.", total, 25)
-	}
+func TestParse(t *testing.T) {
+	Ocr_Parser(&parser.Parser{
+		Data: parser.Read_file(Get_path("./test-files/ocr_giro_transaction.txt")),
+	})
+	Ocr_Parser(&parser.Parser{
+		Data: parser.Read_file(Get_path("./test-files/ocr_nets_example.txt")),
+	})
 }

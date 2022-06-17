@@ -1,10 +1,23 @@
 package parser
 
 type Parser struct {
-	data []byte
-	read func(uint8) []byte
+	Data  []byte
+	index int
 }
 
-func Mul(x int, y int) int {
-	return x * y
+func (parser *Parser) Read_and_increment(length int) []byte {
+	data := parser.read(length)
+	parser.increment(length)
+	return data
+}
+
+func (parser *Parser) read(length int) []byte {
+	if !(parser.index+length < len(parser.Data)) {
+		panic("Out of range")
+	}
+	return parser.Data[parser.index : parser.index+length]
+}
+
+func (parser *Parser) increment(length int) {
+	parser.index += length
 }
