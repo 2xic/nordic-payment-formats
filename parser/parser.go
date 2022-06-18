@@ -1,7 +1,5 @@
 package parser
 
-import "fmt"
-
 type Parser struct {
 	Data  []byte
 	index int
@@ -14,8 +12,6 @@ func (parser *Parser) Read_and_increment(length int) []byte {
 }
 
 func (parser *Parser) Done() bool {
-	fmt.Println(parser.index)
-	fmt.Println(len(parser.Data))
 	return len(parser.Data) == parser.index
 }
 
@@ -24,7 +20,7 @@ func (parser *Parser) Index() int {
 }
 
 func (parser *Parser) read(length int) []byte {
-	if !(parser.index+length < len(parser.Data)) {
+	if !(parser.index+length <= len(parser.Data)) {
 		panic("Out of range")
 	}
 	return parser.Data[parser.index : parser.index+length]

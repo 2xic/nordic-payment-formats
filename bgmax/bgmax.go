@@ -3,12 +3,17 @@ package bgmax
 import (
 	"fmt"
 
-	"github.com/2xic/norwegian-payment-formats/ocr"
+	"github.com/2xic/norwegian-payment-formats/helpers"
 	"github.com/2xic/norwegian-payment-formats/parser"
 )
 
-func BgMax_Parser(parser *parser.Parser) []ocr.SimpleTransaction {
-	var txs []ocr.SimpleTransaction
+type BgMax struct {
+	helpers.Caller
+}
+
+func (BgMax) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
+	var txs []helpers.SimpleTransaction
+
 	for true {
 		if parser.Done() {
 			break
@@ -16,17 +21,20 @@ func BgMax_Parser(parser *parser.Parser) []ocr.SimpleTransaction {
 		start := parser.Index()
 		transaction_code := string(parser.Read_and_increment(2))
 
-		fmt.Printf("TX code %s, index %d\n", transaction_code, parser.Index())
-
 		if transaction_code == "01" {
-			parse_header(parser)
+			header := parse_header(parser)
+			helpers.Require(header.version, "01")
 		} else if transaction_code == "05" {
 			parse_section_header(parser)
 		} else if transaction_code == "20" || transaction_code == "21" || transaction_code == "22" || transaction_code == "23" {
-			parse_payment_section(parser, transaction_code)
+			transaction := parse_payment_section(parser, transaction_code)
+			txs = append(txs, helpers.SimpleTransaction{
+				From_account_number: transaction.from_bank_giro_number,
+				Amount:              transaction.payment_amount,
+				Kid:                 "",
+			})
 		} else if transaction_code == "25" {
-			info := parse_information_post(parser)
-			fmt.Println(info)
+			parse_information_post(parser)
 		} else if transaction_code == "26" {
 			parse_name_post(parser)
 		} else if transaction_code == "27" {
@@ -43,7 +51,7 @@ func BgMax_Parser(parser *parser.Parser) []ocr.SimpleTransaction {
 			next_bytes := parser.Read_and_increment(8)
 			panic(
 				fmt.Sprintf(
-					"Unknown state (tx code '%s', next %s)", transaction_code, next_bytes,
+					"Unknown state (tx code '%s', next '%s')", transaction_code, next_bytes,
 				),
 			)
 		}
@@ -60,7 +68,7 @@ func BgMax_Parser(parser *parser.Parser) []ocr.SimpleTransaction {
 		}
 	}
 
-	return txs
+	return txs, nil
 }
 
 func parse_header(parser *parser.Parser) StartHeader {

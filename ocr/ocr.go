@@ -7,8 +7,12 @@ import (
 	"github.com/2xic/norwegian-payment-formats/parser"
 )
 
-func Ocr_Parser(parser *parser.Parser) []SimpleTransaction {
-	var txs []SimpleTransaction
+type Ocr struct {
+	helpers.Caller
+}
+
+func (Ocr) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
+	var txs []helpers.SimpleTransaction
 	for true {
 		header := parse_header(parser)
 		if header.record_type == "10" {
@@ -17,16 +21,16 @@ func Ocr_Parser(parser *parser.Parser) []SimpleTransaction {
 			tx := parse_transaction(parser)
 			parse_end_header_assignment(parser)
 			parse_tail_transmission(parser)
-			txs = append(txs, SimpleTransaction{
-				kid:                 tx.kid,
-				amount:              tx.amount,
-				from_account_number: tx.from_account_number,
+			txs = append(txs, helpers.SimpleTransaction{
+				Kid:                 tx.kid,
+				Amount:              tx.amount,
+				From_account_number: tx.from_account_number,
 			})
 		} else {
 			break
 		}
 	}
-	return txs
+	return txs, nil
 }
 
 func parse_head_transmission(parser *parser.Parser) TransmissionHeader {
@@ -259,10 +263,4 @@ type Transaction struct {
 	date                string
 	from_account_number string
 	reference           string
-}
-
-type SimpleTransaction struct {
-	kid                 string
-	from_account_number string
-	amount              string
 }

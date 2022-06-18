@@ -1,13 +1,22 @@
 package bgmax
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/2xic/norwegian-payment-formats/parser"
 )
 
 func TestParse(t *testing.T) {
-	BgMax_Parser(&parser.Parser{
-		Data: parser.Read_file(parser.Get_path("bgmax/test-files/example_1.txt")),
+	data := parser.Read_file(parser.Get_path("bgmax/test-files/example_1.txt"))
+	if len(data) != 2240 {
+		panic(
+			fmt.Sprintf(
+				"Wrong encoding %d", len(data),
+			),
+		)
+	}
+	BgMax{}.Parse(&parser.Parser{
+		Data: data,
 	})
 }

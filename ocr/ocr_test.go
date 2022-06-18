@@ -7,7 +7,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	Ocr_Parser(&parser.Parser{
+	Ocr{}.Parse(&parser.Parser{
 		Data: parser.Read_file(parser.Get_path("ocr/test-files/ocr_giro_transaction.txt")),
 	})
 	/*
