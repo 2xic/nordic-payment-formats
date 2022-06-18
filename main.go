@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	path := ocr.Get_path(
-		"./test-files/ocr_nets_example.txt",
+	path := parser.Get_path(
+		"ocr_nets_example.txt",
 	)
 	ocr_file := parser.Read_file(path)
 

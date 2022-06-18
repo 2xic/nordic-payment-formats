@@ -1,0 +1,1 @@
+Test files from https://www.bankgirot.se/tjanster/inbetalningar/bankgiro-inbetalningar/teknisk-information/

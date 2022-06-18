@@ -1,9 +1,9 @@
 package ocr
 
 import (
-	"fmt"
 	"strconv"
 
+	"github.com/2xic/norwegian-payment-formats/helpers"
 	"github.com/2xic/norwegian-payment-formats/parser"
 )
 
@@ -54,16 +54,16 @@ func parse_head_transmission(parser *parser.Parser) TransmissionHeader {
 
 func parse_start_header_assignment(parser *parser.Parser) HeadAssignment {
 	record := string(parser.Read_and_increment(2))
-	require(record, "NY")
+	helpers.Require(record, "NY")
 
 	service_code := string(parser.Read_and_increment(2))
-	require(service_code, "09")
+	helpers.Require(service_code, "09")
 
 	assignment_type := string(parser.Read_and_increment(2))
-	require(assignment_type, "00")
+	helpers.Require(assignment_type, "00")
 
 	record_type := string(parser.Read_and_increment(2))
-	require(record_type, "20")
+	helpers.Require(record_type, "20")
 
 	agreement_id := string(parser.Read_and_increment(9))
 
@@ -97,7 +97,7 @@ func parse_transaction(parser *parser.Parser) Transaction {
 
 	if 18 <= header_amount_1.transaction_type &&
 		header_amount_1.transaction_type <= 21 {
-		//		require(partial_settlement_number, "0")
+		//		helpers.Require(partial_settlement_number, "0")
 	}
 
 	//serial_number := string
@@ -110,10 +110,10 @@ func parse_transaction(parser *parser.Parser) Transaction {
 	(parser.Read_and_increment(6))
 
 	header_amount_2 := parse_header(parser)
-	require(header_amount_2.record_type, "31")
+	helpers.Require(header_amount_2.record_type, "31")
 
 	transaction_number_amount_2 := string(parser.Read_and_increment(7))
-	require(transaction_number, transaction_number_amount_2)
+	helpers.Require(transaction_number, transaction_number_amount_2)
 
 	// form_number := string
 	(parser.Read_and_increment(10))
@@ -137,7 +137,7 @@ func parse_transaction(parser *parser.Parser) Transaction {
 		parse_header(parser)
 
 		transaction_number_amount_3 := string(parser.Read_and_increment(7))
-		require(transaction_number, transaction_number_amount_3)
+		helpers.Require(transaction_number, transaction_number_amount_3)
 
 		reference = string(parser.Read_and_increment(40))
 
@@ -157,10 +157,10 @@ func parse_transaction(parser *parser.Parser) Transaction {
 
 func parse_header(parser *parser.Parser) AmountHeader {
 	record := string(parser.Read_and_increment(2))
-	require(record, "NY")
+	helpers.Require(record, "NY")
 
 	service_code := string(parser.Read_and_increment(2))
-	//	require(service_code, "09")
+	//	helpers.Require(service_code, "09")
 
 	transaction_type := string(parser.Read_and_increment(2))
 	record_type := string(parser.Read_and_increment(2))
@@ -265,10 +265,4 @@ type SimpleTransaction struct {
 	kid                 string
 	from_account_number string
 	amount              string
-}
-
-func require(actual string, expected string) {
-	if actual != expected {
-		panic(fmt.Sprintf("Bad value got %s, but expected %s", actual, expected))
-	}
 }

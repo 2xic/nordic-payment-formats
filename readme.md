@@ -6,3 +6,5 @@ OCR is a weird file format. Super inefficient, but hey it works. Here is the [sy
 
 Test files used for testing was found in [python-netsgiro](https://github.com/otovo/python-netsgiro/tree/master/tests/data) and the system manual by nets.
 
+### BGmax
+BGMax is another weird file format. System manual used to implement was found [here](https://www.bankgirot.se/globalassets/dokument/tekniska-manualer/bankgiroinbetalningar_tekniskmanual_sv.pdf). The layout is more or less the same as a OCR file.

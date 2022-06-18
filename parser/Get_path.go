@@ -1,6 +1,8 @@
-package ocr
+package parser
 
 import (
+	"fmt"
+	"path"
 	"path/filepath"
 	"runtime"
 )
@@ -10,6 +12,10 @@ func Get_path(file string) string {
 	if !ok {
 		panic("Something went wrong")
 	}
-	exPath := filepath.Dir(filename)
-	return exPath + "/test-files/ocr_giro_transaction.txt"
+	caller_path := filepath.Dir(filename)
+	path := path.Join(
+		caller_path, "../", file,
+	)
+	fmt.Print(path)
+	return path
 }

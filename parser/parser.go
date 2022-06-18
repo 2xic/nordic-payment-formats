@@ -1,5 +1,7 @@
 package parser
 
+import "fmt"
+
 type Parser struct {
 	Data  []byte
 	index int
@@ -9,6 +11,16 @@ func (parser *Parser) Read_and_increment(length int) []byte {
 	data := parser.read(length)
 	parser.increment(length)
 	return data
+}
+
+func (parser *Parser) Done() bool {
+	fmt.Println(parser.index)
+	fmt.Println(len(parser.Data))
+	return len(parser.Data) == parser.index
+}
+
+func (parser *Parser) Index() int {
+	return parser.index
 }
 
 func (parser *Parser) read(length int) []byte {
