@@ -1,4 +1,4 @@
-# Norwegian payment formats
+# Noric payment formats
 There are some many "weird" banking payment file formats. Surprisingly these are the format that are the bedrock of the financial system we have here in Norway. Luckily we are starting to move to more decent file formats like ISO 20022.
 
 ### OCR 

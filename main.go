@@ -4,11 +4,11 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/2xic/norwegian-payment-formats/bgmax"
-	"github.com/2xic/norwegian-payment-formats/cremul"
-	"github.com/2xic/norwegian-payment-formats/helpers"
-	"github.com/2xic/norwegian-payment-formats/ocr"
-	"github.com/2xic/norwegian-payment-formats/parser"
+	"github.com/2xic/nordic-payment-formats/bgmax"
+	"github.com/2xic/nordic-payment-formats/cremul"
+	"github.com/2xic/nordic-payment-formats/helpers"
+	"github.com/2xic/nordic-payment-formats/ocr"
+	"github.com/2xic/nordic-payment-formats/parser"
 )
 
 func main() {

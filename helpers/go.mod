@@ -1,1 +1,1 @@
-module github.com/2xic/norwegian-payment-formats/helpers
+module github.com/2xic/nordic-payment-formats/helpers

@@ -3,8 +3,8 @@ package cremul
 import (
 	"fmt"
 
-	"github.com/2xic/norwegian-payment-formats/helpers"
-	"github.com/2xic/norwegian-payment-formats/parser"
+	"github.com/2xic/nordic-payment-formats/helpers"
+	"github.com/2xic/nordic-payment-formats/parser"
 )
 
 type Cremul struct {

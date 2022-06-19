@@ -1,1 +1,1 @@
-module github.com/2xic/norwegian-payment-formats/ocr
+module github.com/2xic/nordic-payment-formats/ocr

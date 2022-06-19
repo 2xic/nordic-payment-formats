@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"github.com/2xic/norwegian-payment-formats/parser"
+	"github.com/2xic/nordic-payment-formats/parser"
 )
 
 type Caller interface {

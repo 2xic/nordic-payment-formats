@@ -1,2 +1,2 @@
-module github.com/2xic/norwegian-payment-formats/parser
+module github.com/2xic/nordic-payment-formats/parser
  

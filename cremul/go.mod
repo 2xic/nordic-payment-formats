@@ -1,1 +1,1 @@
-module github.com/2xic/norwegian-payment-formats/cremul 
+module github.com/2xic/nordic-payment-formats/cremul 
