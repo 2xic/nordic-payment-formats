@@ -9,6 +9,8 @@ Test files used for testing was found in [python-netsgiro](https://github.com/ot
 ### BgMax
 BgMax is another weird file format. System manual used to implement was found [here](https://www.bankgirot.se/globalassets/dokument/tekniska-manualer/bankgiroinbetalningar_tekniskmanual_sv.pdf). The layout is more or less the same as a OCR file.
 
+The official test files were used for testing https://www.bankgirot.se/tjanster/inbetalningar/bankgiro-inbetalningar/teknisk-information/
+
 ### Cremul
 Cremul is maybe the best format if we were to compare it with BgMax and OCR.
 
