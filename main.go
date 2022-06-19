@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/2xic/norwegian-payment-formats/bgmax"
+	"github.com/2xic/norwegian-payment-formats/cremul"
 	"github.com/2xic/norwegian-payment-formats/helpers"
 	"github.com/2xic/norwegian-payment-formats/ocr"
 	"github.com/2xic/norwegian-payment-formats/parser"
@@ -22,9 +23,10 @@ func main() {
 	)
 	ocr_file := parser.Read_file(path)
 
-	var parsers [2]helpers.Caller
+	var parsers [3]helpers.Caller
 	parsers[0] = bgmax.BgMax{}
 	parsers[1] = ocr.Ocr{}
+	parsers[2] = cremul.Cremul{}
 
 	for _, local_parser := range parsers {
 		transactions, _ := try_parser(ocr_file, local_parser)

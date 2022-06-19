@@ -6,5 +6,14 @@ OCR is a weird file format. Super inefficient, but hey it works. Here is the [sy
 
 Test files used for testing was found in [python-netsgiro](https://github.com/otovo/python-netsgiro/tree/master/tests/data) and the system manual by nets.
 
-### BGmax
-BGMax is another weird file format. System manual used to implement was found [here](https://www.bankgirot.se/globalassets/dokument/tekniska-manualer/bankgiroinbetalningar_tekniskmanual_sv.pdf). The layout is more or less the same as a OCR file.
+### BgMax
+BgMax is another weird file format. System manual used to implement was found [here](https://www.bankgirot.se/globalassets/dokument/tekniska-manualer/bankgiroinbetalningar_tekniskmanual_sv.pdf). The layout is more or less the same as a OCR file.
+
+### Cremul
+Cremul is maybe the best format if we were to compare it with BgMax and OCR.
+
+It's more "efficient" by allow variable length, and don't use all the "filler" values like BgMax / OCR.
+
+Used the documentation provided by [Nets](https://www.nets.eu/no-nb/SiteCollectionDocuments/Egiro/Implementation%20Guidelines%20CREMUL%20(ENG).pdf) and [Nordea](https://www.nordea.no/Images/152-69443/CREMUL-implementeringsguide.pdf) to the parser.
+
+Test files used for testing was found in [cremul-parser](https://github.com/perspilling/cremul-parser/tree/0531ecb4a30e901e51e6f81d17a2cd764ced1f0c/test/unit/files) .

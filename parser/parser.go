@@ -11,6 +11,29 @@ func (parser *Parser) Read_and_increment(length int) []byte {
 	return data
 }
 
+func (parser *Parser) Peek(length int) []byte {
+	return parser.read(3)
+}
+
+func (parser *Parser) ReadUntil(char byte, rollback_char byte) []byte {
+	var response []byte
+	for true {
+		if parser.Done() {
+			break
+		}
+		read_char := parser.Read_and_increment(1)
+		if read_char[0] == char {
+			break
+		}
+		if read_char[0] == rollback_char {
+			parser.increment(-1)
+			break
+		}
+		response = append(response, read_char...)
+	}
+	return response
+}
+
 func (parser *Parser) Done() bool {
 	return len(parser.Data) == parser.index
 }
