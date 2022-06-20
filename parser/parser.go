@@ -15,6 +15,10 @@ func (parser *Parser) Peek(length int) []byte {
 	return parser.read(3)
 }
 
+func (parser *Parser) Len() int {
+	return len(parser.Data)
+}
+
 func (parser *Parser) ReadUntil(char byte, rollback_char byte) []byte {
 	var response []byte
 	for true {

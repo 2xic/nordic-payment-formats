@@ -13,8 +13,9 @@ type Ocr struct {
 
 func (Ocr) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
 	var txs []helpers.SimpleTransaction
-	for true {
+	for !parser.Done() {
 		header := parse_header(parser)
+		// TODO: This should be more aware of the state -> i.e like done in the cremul parser.
 		if header.record_type == "10" {
 			parse_head_transmission(parser)
 			parse_start_header_assignment(parser)

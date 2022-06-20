@@ -10,8 +10,12 @@ func TestParse(t *testing.T) {
 	Ocr{}.Parse(&parser.Parser{
 		Data: parser.Read_file(parser.Get_path("ocr/test-files/ocr_giro_transaction.txt")),
 	})
-	/*
-		Ocr_Parser(&parser.Parser{
-			Data: parser.Read_file(parser.Get_path("ocr/test-files/ocr_nets_example.txt")),
-		})*/
+
+	Ocr{}.Parse(&parser.Parser{
+		Data: parser.Read_file(parser.Get_path("ocr/test-files/ocr_1.txt")),
+	})
+
+	Ocr{}.Parse(&parser.Parser{
+		Data: parser.Read_file(parser.Get_path("ocr/test-files/ocr_3.txt")),
+	})
 }

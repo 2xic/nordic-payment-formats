@@ -13,7 +13,13 @@ type BgMax struct {
 
 func (BgMax) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
 	var txs []helpers.SimpleTransaction
-
+	if parser.Len()%80 != 0 {
+		panic(
+			fmt.Sprintf(
+				"Wrong encoding length %d", parser.Len(),
+			),
+		)
+	}
 	for true {
 		if parser.Done() {
 			break

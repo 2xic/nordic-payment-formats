@@ -16,8 +16,6 @@ var rollback_char = char_to_byte("'")
 func (Cremul) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
 	var txs []helpers.SimpleTransaction
 
-	fmt.Println("hello2")
-
 	// There is some part of the begging of the cremul file i'm not sure what is
 	// skipping over it for now - it's not clearly mentioned in the docs
 	for true {
