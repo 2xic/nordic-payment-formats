@@ -1,17 +1,29 @@
-# Noric payment formats
-There are some many "weird" banking payment file formats. Surprisingly these are the format that are the bedrock of the financial system we have here in Norway. Luckily we are starting to move to more decent file formats like ISO 20022.
+# Nordic payment formats
+***No warranty is given. No complaints will be answered.***
+
+There are some many "weird" banking payment file formats. Surprisingly these are the file format that financial system are standing on top of here in the nordics. Luckily we are starting to move to more decent file formats like ISO 20022 (camt) :)
+
+Todo 
+- Standardize the output
+  - i.e
+    - Payer
+    - Receiver
+    - Amount
+    - Reference
+  - Add protocol buffers for the output format - main reason of the project was to play with protocol buffers :) 
+- Validation -> maybe 
 
 ### OCR 
 OCR is a weird file format. Super inefficient, but hey it works. Here is the [system manual by Nets](https://www.nets.eu/no-nb/PublishingImages/Lists/Accordion%20%20OCR%20giro/AllItems/OCR%20giro%20-%20System%20manual.pdf) used for writing the parser. 
 
-Test files used for testing was found in [python-netsgiro](https://github.com/otovo/python-netsgiro/tree/master/tests/data) and [java-netsgiro](https://github.com/Ondkloss/java-netsgiro/tree/2fd2a2f182e5d8731ce0b37191c5c128da4217e6/src/test/resources
+Test files used for writing the parser was found in [python-netsgiro](https://github.com/otovo/python-netsgiro/tree/master/tests/data) and [java-netsgiro](https://github.com/Ondkloss/java-netsgiro/tree/2fd2a2f182e5d8731ce0b37191c5c128da4217e6/src/test/resources
 
 )
 
 ### BgMax
-BgMax is another weird file format. System manual used to implement was found [here](https://www.bankgirot.se/globalassets/dokument/tekniska-manualer/bankgiroinbetalningar_tekniskmanual_sv.pdf). The layout is more or less the same as a OCR file.
+BgMax is another weird file format. System manual used to implement was found [here](https://www.bankgirot.se/globalassets/dokument/tekniska-manualer/bankgiroinbetalningar_tekniskmanual_sv.pdf). The layout is more or less the same as a OCR file, they build upon the same ideas.
 
-The official test files were used for testing https://www.bankgirot.se/tjanster/inbetalningar/bankgiro-inbetalningar/teknisk-information/
+The official test files were used for testing and can be found [here](https://www.bankgirot.se/tjanster/inbetalningar/bankgiro-inbetalningar/teknisk-information/)
 
 ### Cremul
 Cremul is maybe the best format if we were to compare it with BgMax and OCR.
