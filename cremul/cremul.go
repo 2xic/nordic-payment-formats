@@ -13,8 +13,8 @@ type Cremul struct {
 
 var rollback_char = char_to_byte("'")
 
-func (Cremul) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
-	var txs []helpers.SimpleTransaction
+func (Cremul) Parse(parser *parser.Parser) ([]helpers.Transaction, error) {
+	var txs []helpers.Transaction
 
 	// There is some part of the begging of the cremul file i'm not sure what is
 	// skipping over it for now - it's not clearly mentioned in the docs

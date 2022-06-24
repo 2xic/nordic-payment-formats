@@ -38,7 +38,7 @@ func main() {
 	}
 }
 
-func try_parser(file []byte, local_parser helpers.Caller) ([]helpers.SimpleTransaction, error) {
+func try_parser(file []byte, local_parser helpers.Caller) ([]helpers.Transaction, error) {
 	// TODO : Add proper error handling inside each parser.
 	defer func() {
 		if err := recover(); err != nil {

@@ -11,8 +11,8 @@ type BgMax struct {
 	helpers.Caller
 }
 
-func (BgMax) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
-	var txs []helpers.SimpleTransaction
+func (BgMax) Parse(parser *parser.Parser) ([]helpers.Transaction, error) {
+	var txs []helpers.Transaction
 	if parser.Len()%80 != 0 {
 		panic(
 			fmt.Sprintf(
@@ -34,10 +34,10 @@ func (BgMax) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
 			parse_section_header(parser)
 		} else if transaction_code == "20" || transaction_code == "21" || transaction_code == "22" || transaction_code == "23" {
 			transaction := parse_payment_section(parser, transaction_code)
-			txs = append(txs, helpers.SimpleTransaction{
-				From_account_number: transaction.from_bank_giro_number,
-				Amount:              transaction.payment_amount,
-				Kid:                 "",
+			txs = append(txs, helpers.Transaction{
+				FromAccountNumber: transaction.from_bank_giro_number,
+				Amount:            transaction.payment_amount,
+				Kid:               "",
 			})
 		} else if transaction_code == "25" {
 			parse_information_post(parser)

@@ -11,8 +11,8 @@ type Ocr struct {
 	helpers.Caller
 }
 
-func (Ocr) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
-	var txs []helpers.SimpleTransaction
+func (Ocr) Parse(parser *parser.Parser) ([]helpers.Transaction, error) {
+	var txs []helpers.Transaction
 	for !parser.Done() {
 		header := parse_header(parser)
 
@@ -22,10 +22,10 @@ func (Ocr) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
 			parse_start_header_assignment(parser)
 		} else if header.record_type == "30" {
 			tx := parse_transaction(parser, header.transaction_type)
-			txs = append(txs, helpers.SimpleTransaction{
-				Kid:                 tx.kid,
-				Amount:              tx.amount,
-				From_account_number: tx.from_account_number,
+			txs = append(txs, helpers.Transaction{
+				Kid:               tx.kid,
+				Amount:            tx.amount,
+				FromAccountNumber: tx.FromAccountNumber,
 			})
 		} else if header.record_type == "88" {
 			parse_end_header_assignment(parser)
@@ -124,7 +124,7 @@ func parse_transaction(parser *parser.Parser, transaction_type int) Transaction 
 	//date :=
 	(parser.Read_and_increment(6))
 
-	from_account_number := string(parser.Read_and_increment(11))
+	FromAccountNumber := string(parser.Read_and_increment(11))
 
 	(parser.Read_and_increment(22))
 
@@ -143,12 +143,12 @@ func parse_transaction(parser *parser.Parser, transaction_type int) Transaction 
 	}
 
 	return Transaction{
-		transaction_number:  transaction_number,
-		amount:              amount,
-		kid:                 kid,
-		date:                nets_date,
-		from_account_number: from_account_number,
-		reference:           reference,
+		transaction_number: transaction_number,
+		amount:             amount,
+		kid:                kid,
+		date:               nets_date,
+		FromAccountNumber:  FromAccountNumber,
+		reference:          reference,
 	}
 }
 
@@ -246,10 +246,10 @@ type TailAssignment struct {
 }
 
 type Transaction struct {
-	transaction_number  string
-	kid                 string
-	amount              string
-	date                string
-	from_account_number string
-	reference           string
+	transaction_number string
+	kid                string
+	amount             string
+	date               string
+	FromAccountNumber  string
+	reference          string
 }

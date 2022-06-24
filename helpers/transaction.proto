@@ -1,0 +1,15 @@
+syntax = "proto3";
+package tutorial;
+
+message Transaction {
+    string Amount = 1;
+    string FromAccountNumber = 2;
+    string Kid = 3;
+}
+
+message Payer {
+  string name = 1;
+}
+
+option go_package = "./helpers";
+
