@@ -3,6 +3,7 @@ package ocr
 import (
 	"strconv"
 
+	"github.com/2xic/nordic-payment-formats/generated"
 	"github.com/2xic/nordic-payment-formats/helpers"
 	"github.com/2xic/nordic-payment-formats/parser"
 )
@@ -11,8 +12,8 @@ type Ocr struct {
 	helpers.Caller
 }
 
-func (Ocr) Parse(parser *parser.Parser) ([]helpers.Transaction, error) {
-	var txs []helpers.Transaction
+func (Ocr) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
+	var txs []generated.Transaction
 	for !parser.Done() {
 		header := parse_header(parser)
 
@@ -22,7 +23,7 @@ func (Ocr) Parse(parser *parser.Parser) ([]helpers.Transaction, error) {
 			parse_start_header_assignment(parser)
 		} else if header.record_type == "30" {
 			tx := parse_transaction(parser, header.transaction_type)
-			txs = append(txs, helpers.Transaction{
+			txs = append(txs, generated.Transaction{
 				Kid:               tx.kid,
 				Amount:            tx.amount,
 				FromAccountNumber: tx.FromAccountNumber,

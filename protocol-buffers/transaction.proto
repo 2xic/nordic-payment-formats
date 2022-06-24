@@ -1,5 +1,5 @@
 syntax = "proto3";
-package tutorial;
+package protobuf;
 
 message Transaction {
     string Amount = 1;
@@ -11,5 +11,4 @@ message Payer {
   string name = 1;
 }
 
-option go_package = "./helpers";
-
+option go_package = "./generated";

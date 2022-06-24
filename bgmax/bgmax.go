@@ -3,6 +3,7 @@ package bgmax
 import (
 	"fmt"
 
+	"github.com/2xic/nordic-payment-formats/generated"
 	"github.com/2xic/nordic-payment-formats/helpers"
 	"github.com/2xic/nordic-payment-formats/parser"
 )
@@ -11,8 +12,8 @@ type BgMax struct {
 	helpers.Caller
 }
 
-func (BgMax) Parse(parser *parser.Parser) ([]helpers.Transaction, error) {
-	var txs []helpers.Transaction
+func (BgMax) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
+	var txs []generated.Transaction
 	if parser.Len()%80 != 0 {
 		panic(
 			fmt.Sprintf(
@@ -34,7 +35,7 @@ func (BgMax) Parse(parser *parser.Parser) ([]helpers.Transaction, error) {
 			parse_section_header(parser)
 		} else if transaction_code == "20" || transaction_code == "21" || transaction_code == "22" || transaction_code == "23" {
 			transaction := parse_payment_section(parser, transaction_code)
-			txs = append(txs, helpers.Transaction{
+			txs = append(txs, generated.Transaction{
 				FromAccountNumber: transaction.from_bank_giro_number,
 				Amount:            transaction.payment_amount,
 				Kid:               "",

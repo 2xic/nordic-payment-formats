@@ -3,6 +3,7 @@ package cremul
 import (
 	"fmt"
 
+	"github.com/2xic/nordic-payment-formats/generated"
 	"github.com/2xic/nordic-payment-formats/helpers"
 	"github.com/2xic/nordic-payment-formats/parser"
 )
@@ -13,8 +14,8 @@ type Cremul struct {
 
 var rollback_char = char_to_byte("'")
 
-func (Cremul) Parse(parser *parser.Parser) ([]helpers.Transaction, error) {
-	var txs []helpers.Transaction
+func (Cremul) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
+	var txs []generated.Transaction
 
 	// There is some part of the begging of the cremul file i'm not sure what is
 	// skipping over it for now - it's not clearly mentioned in the docs

@@ -1,0 +1,18 @@
+syntax = "proto3";
+package protobuf;
+
+import "transaction.proto";
+
+service PaymentParser {
+    rpc GetTransactions(FileRequest) returns (Response) {}
+}
+
+message FileRequest {
+  string content = 1;
+}
+
+message Response {
+    repeated Transaction transactions = 1;
+}
+
+option go_package = "./generated";
