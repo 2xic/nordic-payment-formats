@@ -15,20 +15,24 @@ func (Ocr) Parse(parser *parser.Parser) ([]helpers.SimpleTransaction, error) {
 	var txs []helpers.SimpleTransaction
 	for !parser.Done() {
 		header := parse_header(parser)
-		// TODO: This should be more aware of the state -> i.e like done in the cremul parser.
+
 		if header.record_type == "10" {
 			parse_head_transmission(parser)
+		} else if header.record_type == "20" {
 			parse_start_header_assignment(parser)
-			tx := parse_transaction(parser)
-			parse_end_header_assignment(parser)
-			parse_tail_transmission(parser)
+		} else if header.record_type == "30" {
+			tx := parse_transaction(parser, header.transaction_type)
 			txs = append(txs, helpers.SimpleTransaction{
 				Kid:                 tx.kid,
 				Amount:              tx.amount,
 				From_account_number: tx.from_account_number,
 			})
+		} else if header.record_type == "88" {
+			parse_end_header_assignment(parser)
+		} else if header.record_type == "89" {
+			parse_tail_transmission(parser)
 		} else {
-			break
+			panic("Unknown record type")
 		}
 	}
 	return txs, nil
@@ -58,18 +62,6 @@ func parse_head_transmission(parser *parser.Parser) TransmissionHeader {
 }
 
 func parse_start_header_assignment(parser *parser.Parser) HeadAssignment {
-	record := string(parser.Read_and_increment(2))
-	helpers.Require(record, "NY")
-
-	service_code := string(parser.Read_and_increment(2))
-	helpers.Require(service_code, "09")
-
-	assignment_type := string(parser.Read_and_increment(2))
-	helpers.Require(assignment_type, "00")
-
-	record_type := string(parser.Read_and_increment(2))
-	helpers.Require(record_type, "20")
-
 	agreement_id := string(parser.Read_and_increment(9))
 
 	assignment_number := string(parser.Read_and_increment(7))
@@ -85,8 +77,8 @@ func parse_start_header_assignment(parser *parser.Parser) HeadAssignment {
 	}
 }
 
-func parse_transaction(parser *parser.Parser) Transaction {
-	header_amount_1 := parse_header(parser)
+func parse_transaction(parser *parser.Parser, transaction_type int) Transaction {
+	//	header_amount_1 := parse_header(parser)
 	transaction_number := string(parser.Read_and_increment(7))
 
 	nets_date := string(parser.Read_and_increment(6))
@@ -100,8 +92,8 @@ func parse_transaction(parser *parser.Parser) Transaction {
 	//partial_settlement_number := string
 	(parser.Read_and_increment(1))
 
-	if 18 <= header_amount_1.transaction_type &&
-		header_amount_1.transaction_type <= 21 {
+	if 18 <= transaction_type &&
+		transaction_type <= 21 {
 		//		helpers.Require(partial_settlement_number, "0")
 	}
 
@@ -184,10 +176,8 @@ func parse_header(parser *parser.Parser) AmountHeader {
 }
 
 func parse_end_header_assignment(parser *parser.Parser) TailAssignment {
-	parse_header(parser)
-
 	// Number of transactions
-	(parser.Read_and_increment(8))
+	parser.Read_and_increment(8)
 
 	// Number of records
 	number_of_records := (parser.Read_and_increment(8))
@@ -214,8 +204,6 @@ func parse_end_header_assignment(parser *parser.Parser) TailAssignment {
 }
 
 func parse_tail_transmission(parser *parser.Parser) {
-	parse_header(parser)
-
 	// Number of transactions
 	(parser.Read_and_increment(8))
 
