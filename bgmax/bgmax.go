@@ -14,18 +14,21 @@ type BgMax struct {
 
 func (BgMax) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 	var txs []generated.Transaction
-	if parser.Len()%80 != 0 {
-		panic(
-			fmt.Sprintf(
-				"Wrong encoding length %d", parser.Len(),
-			),
-		)
-	}
+	// This should be ran at the end. I.e parsed characters should be % 80 (i.e ignore new line)
+	/*
+		if parser.Len()%80 != 0 {
+			panic(
+				fmt.Sprintf(
+					"Wrong encoding length %d", parser.Len(),
+				),
+			)
+		}
+	*/
 	for true {
 		if parser.Done() {
 			break
 		}
-		start := parser.Index()
+		start := parser.Tokens
 		transaction_code := string(parser.Read_and_increment(2))
 
 		if transaction_code == "01" {
@@ -62,17 +65,19 @@ func (BgMax) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 				),
 			)
 		}
-		//parser.Read_and_increment(1)
-		if parser.Index()%80 != 0 {
-			panic(
-				fmt.Sprintf(
-					"Something is wrong with the parser (index %d)",
-					parser.Index(),
-				),
-			)
-		} else if (parser.Index() - start) != 80 {
+
+		if (parser.Tokens - start) != 80 {
 			panic("Read out of bounds ? ")
 		}
+	}
+
+	if parser.Tokens%80 != 0 {
+		panic(
+			fmt.Sprintf(
+				"Something is wrong with the parser (index %d)",
+				parser.Tokens,
+			),
+		)
 	}
 
 	return txs, nil

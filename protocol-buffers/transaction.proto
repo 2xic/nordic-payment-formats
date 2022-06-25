@@ -1,10 +1,14 @@
 syntax = "proto3";
 package protobuf;
 
+import "google/protobuf/timestamp.proto";
+
 message Transaction {
     string Amount = 1;
     string FromAccountNumber = 2;
     string Kid = 3;
+    google.protobuf.Timestamp date = 4;
+    string Reference = 5;
 }
 
 message Payer {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/2xic/nordic-payment-formats/combined"
+	"github.com/2xic/nordic-payment-formats/generated"
 	"github.com/2xic/nordic-payment-formats/parser"
 )
 
@@ -19,5 +20,13 @@ func main() {
 		*file,
 	)
 	file_bytes := parser.Read_file(path)
-	fmt.Println(combined.Try_to_parse(file_bytes))
+	transactions := (combined.Try_to_parse(file_bytes))
+	print_transactions(transactions)
+}
+
+func print_transactions(transactions []generated.Transaction) {
+	for index := range transactions {
+		transaction := &transactions[index]
+		fmt.Println(transaction)
+	}
 }

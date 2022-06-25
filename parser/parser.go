@@ -1,18 +1,23 @@
 package parser
 
 type Parser struct {
-	Data  []byte
-	index int
+	Data   []byte
+	index  int
+	Tokens int
 }
 
 func (parser *Parser) Read_and_increment(length int) []byte {
-	data := parser.read(length)
-	parser.increment(length)
+	data, change, read := parser.read(length)
+	parser.increment(
+		max(change, length),
+	)
+	parser.Tokens += read
 	return data
 }
 
 func (parser *Parser) Peek(length int) []byte {
-	return parser.read(3)
+	bytes, _, _ := parser.read(length)
+	return bytes
 }
 
 func (parser *Parser) Len() int {
@@ -39,20 +44,39 @@ func (parser *Parser) ReadUntil(char byte, rollback_char byte) []byte {
 }
 
 func (parser *Parser) Done() bool {
-	return len(parser.Data) == parser.index
+	return len(parser.Data) <= parser.index+1
 }
 
 func (parser *Parser) Index() int {
 	return parser.index
 }
 
-func (parser *Parser) read(length int) []byte {
-	if !(parser.index+length <= len(parser.Data)) {
-		panic("Out of range")
+func (parser *Parser) read(length int) ([]byte, int, int) {
+	var parsed []byte
+	change := 0
+	read := 0
+	for read < length {
+		index := parser.index + change
+		if !(index <= len(parser.Data)-1) {
+			break
+		}
+		read_byte := parser.Data[index]
+		if string(read_byte) != "\n" {
+			parsed = append(parsed, read_byte)
+			read++
+		}
+		change++
 	}
-	return parser.Data[parser.index : parser.index+length]
+	return parsed, change, read
 }
 
 func (parser *Parser) increment(length int) {
 	parser.index += length
+}
+
+func max(x, y int) int {
+	if x < y {
+		return y
+	}
+	return x
 }
