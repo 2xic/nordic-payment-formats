@@ -42,6 +42,7 @@ func (Ocr) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 				Date: timestamppb.New(
 					converted_date,
 				),
+				Reference: helpers.Trim(tx.reference),
 			})
 		} else if header.record_type == "88" {
 			summary_assignment := parse_end_header_assignment(parser)
@@ -52,7 +53,12 @@ func (Ocr) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 		} else {
 			panic("Unknown record type")
 		}
+
+		parser.Validate(80)
 	}
+
+	parser.Validate(80)
+
 	return txs, nil
 }
 

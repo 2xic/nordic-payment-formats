@@ -17,7 +17,7 @@ var rollback_char = char_to_byte("'")
 func (Cremul) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 	var txs []generated.Transaction
 
-	// There is some part of the begging of the cremul file i'm not sure what is
+	// There is some part of the begining of the cremul file i'm not sure what is
 	// skipping over it for now - it's not clearly mentioned in the docs
 	for true {
 		current := string(parser.Read_and_increment(1))
@@ -33,72 +33,61 @@ func (Cremul) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 		code := string(parser.ReadUntil(char_to_byte("+"), rollback_char))
 
 		if code == "UNH" {
-			fmt.Println(parse_message_header(parser))
-			continue
+			parse_message_header(parser)
 		} else if code == "BGM" {
-			fmt.Println(parse_begging_of_message(parser))
-			continue
+			parse_beginning_of_message(parser)
 		} else if code == "NAD" {
-			fmt.Println(parse_payer(parser))
-			continue
+			payer, _ := parse_payer(parser)
+			// TODO : This is incorrect.
+			txs = append(txs, generated.Transaction{Payer: &generated.Payer{
+				Name: payer.party_identification_details,
+			}})
 		} else if code == "DTM" {
-			fmt.Println(parse_timestamp(parser))
-			continue
+			parse_timestamp(parser)
 		} else if code == "MOA" {
-			fmt.Println(parse_monetary_amount(parser))
-			continue
+			monetary_amount, _ := parse_monetary_amount(parser)
+			txs[len(txs)-1].Amount = monetary_amount.amount
+			txs[len(txs)-1].Currency = monetary_amount.currency
 		} else if code == "FII" {
-			fmt.Println(parse_business_function(parser))
-			continue
+			parse_business_function(parser)
 		} else if code == "LIN" {
-			(parse_line_item(parser))
-			continue
+			// Todo : implement this
+			parser.ReadUntil(char_to_byte("'"), rollback_char)
 		} else if code == "BUS" {
 			parse_business_function(parser)
-			continue
 		} else if code == "RFF" {
-			fmt.Println(parse_reference(parser))
-			continue
+			parse_reference(parser)
 		} else if code == "SEQ" {
-			fmt.Println(parse_sequence(parser))
-			continue
+			parse_sequence(parser)
 		} else if code == "PRC" {
 			parse_process_identification(parser)
-			continue
 		} else if code == "FTX" {
-			fmt.Println(parse_free_text(parser))
-			continue
+			parse_free_text(parser)
 		} else if code == "CNT" {
-			fmt.Println(parse_control_total(parser))
-			continue
+			parse_control_total(parser)
 		} else if code == "UNT" {
-			fmt.Println(parse_message_trailer(parser))
-			continue
+			parse_message_trailer(parser)
 		} else if code == "UNZ" {
+			// This does not seem to be used by nets.
 			parser.ReadUntil(char_to_byte("'"), rollback_char)
-			continue
+		} else if code == "DOC" {
+			// This does not seem to be used by nets.
+			parser.ReadUntil(char_to_byte("'"), rollback_char)
+		} else if code == "GIS" {
+			// Todo : implement this
+			parser.ReadUntil(char_to_byte("'"), rollback_char)
+		} else if code == "INP" {
+			// Todo : implement this
+			parser.ReadUntil(char_to_byte("'"), rollback_char)
+		} else {
+			panic(fmt.Sprintf("UNknown code '%s' \n", code))
 		}
-		fmt.Printf("UNknown code '%s' \n", code)
-		break
 	}
 
-	/*
-		fmt.Println(parse_message_header(parser))
-		fmt.Println(parse_begging_of_message(parser))
-		fmt.Println(parse_timestamp(parser))
-		parse_payer(parser)
-		parse_line_item(parser)
-		fmt.Println(parse_timestamp(parser))
-		fmt.Println(parse_business_function(parser))
-		fmt.Println(parse_monetary_amount(parser))
-		fmt.Println(parse_reference(parser))
-		fmt.Println(parse_timestamp(parser))
-	*/
 	return txs, nil
 }
 
 func parse_message_header(parser *parser.Parser) (message_header, error) {
-	//	parser.ReadUntil(char_to_byte("+"), rollback_char)
 	reference_number := string(parser.ReadUntil(char_to_byte("+"), rollback_char))
 	message_type_identifier := string(parser.ReadUntil(char_to_byte(":"), rollback_char))
 	message_version_number := string(parser.ReadUntil(char_to_byte(":"), rollback_char))
@@ -115,7 +104,7 @@ func parse_message_header(parser *parser.Parser) (message_header, error) {
 	}, nil
 }
 
-func parse_begging_of_message(parser *parser.Parser) (beginning_of_message, error) {
+func parse_beginning_of_message(parser *parser.Parser) (beginning_of_message, error) {
 	message_name_coded := string(parser.ReadUntil(char_to_byte("+"), rollback_char))
 	unique_identifier := string(parser.ReadUntil(char_to_byte("'"), rollback_char))
 
@@ -147,10 +136,6 @@ func parse_payer(parser *parser.Parser) (payer, error) {
 		party_qualifier:              string(party_qualifier),
 		party_identification_details: string(party_identification_details),
 	}, nil
-}
-
-func parse_line_item(parser *parser.Parser) {
-	parser.ReadUntil(char_to_byte("'"), rollback_char)
 }
 
 func parse_business_function(parser *parser.Parser) (business_function, error) {

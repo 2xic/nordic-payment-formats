@@ -9,10 +9,16 @@ message Transaction {
     string Kid = 3;
     google.protobuf.Timestamp date = 4;
     string Reference = 5;
+    Payer Payer = 6;
+    string Currency = 7;
 }
 
 message Payer {
-  string name = 1;
+  string Name = 1;
+  string Address1 = 2;
+  string Address2 = 3;
+  string ZipCode = 4;
+  string CountryCode = 5;
 }
 
 option go_package = "./generated";

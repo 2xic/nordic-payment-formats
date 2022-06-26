@@ -1,5 +1,7 @@
 package parser
 
+import "fmt"
+
 type Parser struct {
 	Data   []byte
 	index  int
@@ -72,6 +74,17 @@ func (parser *Parser) read(length int) ([]byte, int, int) {
 
 func (parser *Parser) increment(length int) {
 	parser.index += length
+}
+
+func (parser *Parser) Validate(expectedDelta int) {
+	if parser.Tokens%expectedDelta != 0 {
+		panic(
+			fmt.Sprintf(
+				"Something is wrong with the parser (index %d)",
+				parser.Tokens,
+			),
+		)
+	}
 }
 
 func max(x, y int) int {

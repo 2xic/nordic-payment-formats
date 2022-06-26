@@ -16,6 +16,6 @@ func Get_path(file string) string {
 	path := path.Join(
 		caller_path, "../", file,
 	)
-	fmt.Print(path)
+	fmt.Println(path)
 	return path
 }

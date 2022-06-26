@@ -5,4 +5,4 @@ M+209:20140312:102'BUS++DO++233:25:124'MOA+349:1394:NOK'RFF+ACK:08012992096'DTM+
 12:Tømrer Morten Rognebær AS'RFF+AEK:12072200001'RFF+ACD:180229451'MOA+143:1394'NAD+PL+++Tømrer Morten Rog
 nebær AS+Skjerpåkeren 17+STANGE++2335'NAD+BE+++FOND.FOR REGIONALE VERNEOMBUD++++
 0000'PRC+11'FTX+PMD+++Tømrer Morten Rognebær AS'CNT+LI:1'UNT+23+1'UNZ+1+01001386
-'                                                                               
+'

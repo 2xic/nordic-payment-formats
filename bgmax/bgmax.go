@@ -2,6 +2,7 @@ package bgmax
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/2xic/nordic-payment-formats/generated"
 	"github.com/2xic/nordic-payment-formats/helpers"
@@ -14,43 +15,38 @@ type BgMax struct {
 
 func (BgMax) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 	var txs []generated.Transaction
-	// This should be ran at the end. I.e parsed characters should be % 80 (i.e ignore new line)
-	/*
-		if parser.Len()%80 != 0 {
-			panic(
-				fmt.Sprintf(
-					"Wrong encoding length %d", parser.Len(),
-				),
-			)
-		}
-	*/
-	for true {
-		if parser.Done() {
-			break
-		}
-		start := parser.Tokens
+	currency := ""
+	for !parser.Done() {
 		transaction_code := string(parser.Read_and_increment(2))
 
 		if transaction_code == "01" {
 			header := parse_header(parser)
 			helpers.Require(header.version, "01")
 		} else if transaction_code == "05" {
-			parse_section_header(parser)
+			section := parse_section_header(parser)
+			currency = section.currency
 		} else if transaction_code == "20" || transaction_code == "21" || transaction_code == "22" || transaction_code == "23" {
 			transaction := parse_payment_section(parser, transaction_code)
 			txs = append(txs, generated.Transaction{
 				FromAccountNumber: transaction.from_bank_giro_number,
-				Amount:            transaction.payment_amount,
+				Amount:            transaction.payment_amount.String(),
 				Kid:               "",
+				Reference:         helpers.Trim(transaction.reference),
+				Payer:             &generated.Payer{},
+				Currency:          currency,
 			})
 		} else if transaction_code == "25" {
 			parse_information_post(parser)
 		} else if transaction_code == "26" {
-			parse_name_post(parser)
+			payer := parse_name_post(parser)
+			txs[len(txs)-1].Payer.Name = helpers.Trim(payer.name)
 		} else if transaction_code == "27" {
-			parse_address_1(parser)
+			payer := parse_address_1(parser)
+			txs[len(txs)-1].Payer.Address1 = helpers.Trim(payer.address1)
 		} else if transaction_code == "28" {
-			parse_address_2(parser)
+			payer := parse_address_2(parser)
+			txs[len(txs)-1].Payer.Address2 = helpers.Trim(payer.local_address)
+			txs[len(txs)-1].Payer.CountryCode = helpers.Trim(payer.country_code)
 		} else if transaction_code == "29" {
 			parse_organizations_number(parser)
 		} else if transaction_code == "15" {
@@ -66,25 +62,15 @@ func (BgMax) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 			)
 		}
 
-		if (parser.Tokens - start) != 80 {
-			panic("Read out of bounds ? ")
-		}
+		parser.Validate(80)
 	}
 
-	if parser.Tokens%80 != 0 {
-		panic(
-			fmt.Sprintf(
-				"Something is wrong with the parser (index %d)",
-				parser.Tokens,
-			),
-		)
-	}
+	parser.Validate(80)
 
 	return txs, nil
 }
 
 func parse_header(parser *parser.Parser) StartHeader {
-	//	transaction_code := parser.Read_and_increment(2)
 	layout_name := parser.Read_and_increment(20)
 	version := parser.Read_and_increment(2)
 	timestamp := parser.Read_and_increment(20)
@@ -94,7 +80,6 @@ func parse_header(parser *parser.Parser) StartHeader {
 	parser.Read_and_increment(35)
 
 	return StartHeader{
-		//	transaction_code: string(transaction_code),
 		layout_name:   string(layout_name),
 		version:       string(version),
 		timestamp:     string(timestamp),
@@ -103,7 +88,6 @@ func parse_header(parser *parser.Parser) StartHeader {
 }
 
 func parse_section_header(parser *parser.Parser) SectionHeader {
-	//transaction_code := parser.Read_and_increment(2)
 	to_giro_number := parser.Read_and_increment(10)
 	to_giro_plus_number := parser.Read_and_increment(10)
 	currency := parser.Read_and_increment(3)
@@ -112,7 +96,6 @@ func parse_section_header(parser *parser.Parser) SectionHeader {
 	parser.Read_and_increment(55)
 
 	return SectionHeader{
-		//transaction_code:    string(transaction_code),
 		to_giro_number:      string(to_giro_number),
 		to_plus_giro_number: string(to_giro_plus_number),
 		currency:            string(currency),
@@ -120,7 +103,6 @@ func parse_section_header(parser *parser.Parser) SectionHeader {
 }
 
 func parse_payment_section(parser *parser.Parser, transaction_code string) SectionPayment {
-	//	transaction_code := parser.Read_and_increment(2)
 	from_bank_giro_number := parser.Read_and_increment(10)
 	reference := parser.Read_and_increment(25)
 	payment_amount := parser.Read_and_increment(18)
@@ -132,10 +114,11 @@ func parse_payment_section(parser *parser.Parser, transaction_code string) Secti
 	payment_channel_code := parser.Read_and_increment(1)
 
 	bgc_identifier := parser.Read_and_increment(12)
+
 	// "Avibildmarkering" -> brevgiro ?
 	has_photo := parser.Read_and_increment(1)
-	// filler
 
+	// filler
 	if string(transaction_code) == "21" {
 		// deduction code
 		parser.Read_and_increment(1)
@@ -150,11 +133,11 @@ func parse_payment_section(parser *parser.Parser, transaction_code string) Secti
 		transaction_code:      string(transaction_code),
 		from_bank_giro_number: string(from_bank_giro_number),
 		reference:             string(reference),
-		payment_amount:        string(payment_amount),
+		payment_amount:        helpers.ConvertToBigInt(string(payment_amount)),
 		reference_code:        string(reference_code),
 		payment_channel_code:  string(payment_channel_code),
 		bgc_identifier:        string(bgc_identifier),
-		is_ocr:                string(has_photo) == "1",
+		has_photo:             string(has_photo) == "1",
 	}
 }
 
@@ -256,7 +239,6 @@ func parse_tail_header(parser *parser.Parser) EndHeader {
 }
 
 type StartHeader struct {
-	//	transaction_code string
 	layout_name   string
 	version       string
 	timestamp     string
@@ -264,7 +246,6 @@ type StartHeader struct {
 }
 
 type SectionHeader struct {
-	//	transaction_code    string
 	to_giro_number      string
 	to_plus_giro_number string
 	currency            string
@@ -274,11 +255,11 @@ type SectionPayment struct {
 	transaction_code      string
 	from_bank_giro_number string
 	reference             string
-	payment_amount        string
+	payment_amount        *big.Int
 	reference_code        string
 	payment_channel_code  string
 	bgc_identifier        string
-	is_ocr                bool
+	has_photo             bool
 }
 
 type InformationPost struct {

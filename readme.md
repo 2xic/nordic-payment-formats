@@ -1,17 +1,11 @@
 # Nordic payment formats
 ***No warranty is given. No complaints will be answered.***
 
-There are some many "weird" banking payment file formats. Surprisingly these are the file format that financial system are standing on top of here in the nordics. Luckily we are starting to move to more decent file formats like ISO 20022 (camt) :)
+Over the years many "weird" banking payment file formats have been created. Surprisingly these are the file format that financial system are standing on top of here in the nordics. Luckily we are starting to move to more decent file formats like ISO 20022 (camt) :)
 
-Todo 
-- Standardize the output
-  - i.e
-    - Payer
-    - Receiver
-    - Amount
-    - Reference
-  - Add protocol buffers for the output format - main reason of the project was to play with protocol buffers :) 
-- Validation -> maybe 
+The aim of the project was for me to play some with protobuf and grpc. In addition I wanted to take a deeper look at nordic payment formats by building a simple parser for them.
+
+_Status: The bedrock for the parsers should be in place. There are some quirks of the Cremul format that has not been fixed. The main goal of the project has been achieved, so leaving the fixing of theses quirks as an exercise to the reader :) In addition additional tests should be added if this project should be used in any professional settings (no warranty given)_
 
 ### OCR 
 OCR is a weird file format. Super inefficient, but hey it works. Here is the [system manual by Nets](https://www.nets.eu/no-nb/PublishingImages/Lists/Accordion%20%20OCR%20giro/AllItems/OCR%20giro%20-%20System%20manual.pdf) used for writing the parser. 

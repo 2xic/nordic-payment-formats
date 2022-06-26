@@ -21,6 +21,7 @@ func main() {
 	)
 	file_bytes := parser.Read_file(path)
 	transactions := (combined.Try_to_parse(file_bytes))
+	fmt.Println("======")
 	print_transactions(transactions)
 }
 
