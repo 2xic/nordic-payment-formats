@@ -87,6 +87,34 @@ func (parser *Parser) Validate(expectedDelta int) {
 	}
 }
 
+func (parser *Parser) AutoAddPadding(lineLength int) *Parser {
+	var parsed []byte
+	lengthTracker := 0
+	funcPadding := func() {
+		for i := 0; i < lengthTracker%lineLength; i++ {
+			parsed = append(parsed, byte(" "[0]))
+			lengthTracker++
+		}
+	}
+	for !parser.Done() {
+		token := parser.Data[parser.index]
+		if string(token) != "\n" {
+			parsed = append(parsed, token)
+			lengthTracker++
+		} else {
+			funcPadding()
+		}
+		parser.index++
+	}
+	funcPadding()
+
+	return &Parser{
+		Data:   parsed,
+		index:  0,
+		Tokens: 0,
+	}
+}
+
 func max(x, y int) int {
 	if x < y {
 		return y

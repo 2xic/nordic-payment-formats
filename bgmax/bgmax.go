@@ -13,8 +13,9 @@ type BgMax struct {
 	helpers.Caller
 }
 
-func (BgMax) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
+func (BgMax) Parse(inputParser *parser.Parser) ([]generated.Transaction, error) {
 	var txs []generated.Transaction
+	parser := inputParser.AutoAddPadding(80)
 	currency := ""
 	for !parser.Done() {
 		transaction_code := string(parser.Read_and_increment(2))
@@ -27,14 +28,19 @@ func (BgMax) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 			currency = section.currency
 		} else if transaction_code == "20" || transaction_code == "21" || transaction_code == "22" || transaction_code == "23" {
 			transaction := parse_payment_section(parser, transaction_code)
-			txs = append(txs, generated.Transaction{
-				FromAccountNumber: transaction.from_bank_giro_number,
-				Amount:            transaction.payment_amount.String(),
-				Kid:               "",
-				Reference:         helpers.Trim(transaction.reference),
-				Payer:             &generated.Payer{},
-				Currency:          currency,
-			})
+			if transaction.transaction_code == "22" && transaction.payment_amount.String() == "0" {
+				txs[len(txs)-1].Reference = transaction.reference
+			} else {
+				txs = append(txs, generated.Transaction{
+					FromAccountNumber: transaction.from_bank_giro_number,
+					Amount:            transaction.payment_amount.String(),
+					Kid:               "",
+					Reference:         helpers.Trim(transaction.reference),
+					Payer:             &generated.Payer{},
+					Currency:          currency,
+					TransactionCode:   transaction.transaction_code,
+				})
+			}
 		} else if transaction_code == "25" {
 			parse_information_post(parser)
 		} else if transaction_code == "26" {
@@ -61,7 +67,6 @@ func (BgMax) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 				),
 			)
 		}
-
 		parser.Validate(80)
 	}
 

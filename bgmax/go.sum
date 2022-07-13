@@ -1,5 +1,12 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
+github.com/2xic/nordic-payment-formats v0.0.0-20220626112238-894578f59b7b h1:fmK4zMMckEaLmLZ2EhoPgvY8KzXqymJe1cPHkUpy4b8=
+github.com/2xic/nordic-payment-formats/generated v0.0.0-20220626112238-894578f59b7b h1:y7tBrR7jcJ+nWB++cE3WPHl11ScBDMR9h681XEIxt+I=
+github.com/2xic/nordic-payment-formats/generated v0.0.0-20220626112238-894578f59b7b/go.mod h1:u48Z1qJfZcefgpEw503qDTvk4EQmmDiCbEKiWLIlkfQ=
+github.com/2xic/nordic-payment-formats/helpers v0.0.0-20220626112238-894578f59b7b h1:uN36W+ll32IomTqgI5GFtOl54cgT/s32B4+MN9AMAiY=
+github.com/2xic/nordic-payment-formats/helpers v0.0.0-20220626112238-894578f59b7b/go.mod h1:bVLHEix+RqV8hFV0e+3nSZpRryOEW2gOjPgaE51ldVg=
+github.com/2xic/nordic-payment-formats/parser v0.0.0-20220626112238-894578f59b7b h1:e3WyX1VnI60aw/jW8WZ6jbj6rNybdJvHekEDAA4r79E=
+github.com/2xic/nordic-payment-formats/parser v0.0.0-20220626112238-894578f59b7b/go.mod h1:mFHh/cqybDYmzP9Yn8Qd086KCQl5Zpz2zEB6AJ7BxpI=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=

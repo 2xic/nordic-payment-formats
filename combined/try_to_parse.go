@@ -1,6 +1,8 @@
 package combined
 
 import (
+	"log"
+
 	"github.com/2xic/nordic-payment-formats/bgmax"
 	"github.com/2xic/nordic-payment-formats/cremul"
 	"github.com/2xic/nordic-payment-formats/generated"
@@ -29,7 +31,7 @@ func try_parser(file []byte, local_parser helpers.Caller) ([]generated.Transacti
 	// TODO : Add proper error handling inside each parser.
 	defer func() {
 		if err := recover(); err != nil {
-			//log.Println("panic occurred:", err)
+			log.Println("panic occurred:", err)
 		}
 	}()
 

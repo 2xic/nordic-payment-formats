@@ -9,9 +9,9 @@ protoc  -I=$SRC_DIR/ \
         $SRC_DIR/service.proto $SRC_DIR/transaction.proto
 
 go vet ./cmd/server
+go build ./cmd/cli
 go build ./cmd/server
 go build ./cmd/client
-go build ./cmd/cli
 
 go test github.com/2xic/nordic-payment-formats/parser
 go test github.com/2xic/nordic-payment-formats/ocr
