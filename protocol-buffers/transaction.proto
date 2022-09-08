@@ -5,6 +5,7 @@ import "google/protobuf/timestamp.proto";
 
 message Transaction {
     string Amount = 1;
+    string ToBankAccountNumber = 14;
     string FromAccountNumber = 2;
     string Kid = 3;
     google.protobuf.Timestamp date = 4;
@@ -13,6 +14,11 @@ message Transaction {
     string Currency = 7;
     string TransactionCode = 8;
     bool IsInternational = 9;
+    string TransactionGroupId = 10;
+    string TransactionInnerGroupId = 11;
+    bool IsCreditNote = 12;
+    Nets nets = 13;
+    int32 TransactionType = 15;
 }
 
 message Payer {
@@ -21,6 +27,23 @@ message Payer {
   string Address2 = 3;
   string ZipCode = 4;
   string CountryCode = 5;
+}
+
+message Nets {
+  string AgreementId = 12;
+  string FormNumber = 13;
+  string TransactionNumber = 15;  
+  string SerialNumber = 16;
+  string PartialSettlementNumber = 17;
+  string TransactionTypeDescription = 22;
+
+  // Transmission
+  string DataTransmitter = 18;
+  string CustomerUnitId = 21;
+  
+  // Assignment
+  string AssignmentNumber = 19;
+  string AssignmentAccount = 20;  
 }
 
 option go_package = "./generated";

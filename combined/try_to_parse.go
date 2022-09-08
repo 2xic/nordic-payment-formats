@@ -31,7 +31,7 @@ func try_parser(file []byte, local_parser helpers.Caller) ([]generated.Transacti
 	// TODO : Add proper error handling inside each parser.
 	defer func() {
 		if err := recover(); err != nil {
-			log.Println("panic occurred:", err)
+			log.Println("panic occurred:", err, local_parser.Name())
 		}
 	}()
 

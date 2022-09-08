@@ -13,6 +13,10 @@ type BgMax struct {
 	helpers.Caller
 }
 
+func (BgMax) Name() string {
+	return "BgMax";
+}
+
 func (BgMax) Parse(inputParser *parser.Parser) ([]generated.Transaction, error) {
 	var txs []generated.Transaction
 	parser := inputParser.AutoAddPadding(80)

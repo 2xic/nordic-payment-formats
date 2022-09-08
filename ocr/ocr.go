@@ -16,17 +16,26 @@ type Ocr struct {
 	helpers.Caller
 }
 
+func (Ocr) Name() string {
+	return "OCR"
+}
+
 func (Ocr) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 	var txs []generated.Transaction
 	sum_summary_amount := new(big.Int)
+
+	var current_assignment *HeadAssignment
+	var current_transmission *TransmissionHeader
 
 	for !parser.Done() {
 		header := parse_header(parser)
 
 		if header.record_type == "10" {
-			parse_head_transmission(parser)
+			results := parse_head_transmission(parser)
+			current_transmission = &results
 		} else if header.record_type == "20" {
-			parse_start_header_assignment(parser)
+			results := parse_start_header_assignment(parser)
+			current_assignment = &results
 		} else if header.record_type == "30" {
 			tx := parse_transaction(parser, header.transaction_type)
 			converted_date, error := time.Parse("020106", tx.date)
@@ -35,6 +44,23 @@ func (Ocr) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 					fmt.Sprintf("Error in parsing date %s, input %s", error, tx.date),
 				)
 			}
+
+			m := map[int]string{
+				10: "Transaction from giro debited account",
+				11: "Transaction from standing orders",
+				12: "Transaction from direct remittance",
+				13: "Transaction from BTG (Business Terminal Giro)",
+				14: "Transaction from counter giro",
+				15: "Transaction from AvtaleGiro",
+				16: "Transaction from telegiro",
+				17: "Transaction from giro - paid in cash",
+				18: "Reversing with KID",
+				19: "Purchase with KID",
+				20: "Reversing with free text",
+				21: "Purchase with free text",
+			}
+			transactionTypeDescription := m[header.transaction_type]
+
 			txs = append(txs, generated.Transaction{
 				Kid:               helpers.Trim(tx.kid),
 				Amount:            tx.amount.String(),
@@ -42,7 +68,21 @@ func (Ocr) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 				Date: timestamppb.New(
 					converted_date,
 				),
-				Reference: helpers.Trim(tx.reference),
+				Reference:           helpers.Trim(tx.reference),
+				IsCreditNote:        tx.CanProcessCreditNote,
+				ToBankAccountNumber: current_assignment.assignment_account,
+				Nets: &generated.Nets{
+					TransactionNumber:          tx.transaction_number,
+					SerialNumber:               tx.SerialNumber,
+					PartialSettlementNumber:    tx.PartialSettlementNumber,
+					FormNumber:                 tx.FormNumber,
+					AgreementId:                tx.AgreementId,
+					DataTransmitter:            current_transmission.data_transmitter,
+					CustomerUnitId:             current_transmission.customer_unit_id,
+					AssignmentNumber:           current_assignment.assignment_number,
+					AssignmentAccount:          current_assignment.assignment_account,
+					TransactionTypeDescription: transactionTypeDescription,
+				},
 			})
 		} else if header.record_type == "88" {
 			summary_assignment := parse_end_header_assignment(parser)
@@ -111,19 +151,15 @@ func parse_transaction(parser *parser.Parser, transaction_type int) Transaction 
 	//day_code := string
 	(parser.Read_and_increment(2))
 
-	//partial_settlement_number := string
-	(parser.Read_and_increment(1))
+	partial_settlement_number := string(parser.Read_and_increment(1))
 
-	if 18 <= transaction_type &&
-		transaction_type <= 21 {
+	if 18 <= transaction_type && transaction_type <= 21 {
 		//		helpers.Require(partial_settlement_number, "0")
 	}
 
-	//serial_number := string
-	(parser.Read_and_increment(5))
+	serial_number := string(parser.Read_and_increment(5))
 
-	//sign := string
-	(parser.Read_and_increment(1))
+	sign := string(parser.Read_and_increment(1))
 
 	amount := string(parser.Read_and_increment(17))
 
@@ -132,19 +168,19 @@ func parse_transaction(parser *parser.Parser, transaction_type int) Transaction 
 	//filler
 	(parser.Read_and_increment(6))
 
+	/*
+		Amount item 2
+	*/
 	header_amount_2 := parse_header(parser)
 	helpers.Require(header_amount_2.record_type, "31")
 
 	transaction_number_amount_2 := string(parser.Read_and_increment(7))
 	helpers.Require(transaction_number, transaction_number_amount_2)
 
-	// form_number := string
-	(parser.Read_and_increment(10))
+	form_number := string(parser.Read_and_increment(10))
+	agreement_id := string(parser.Read_and_increment(9))
 
-	// agreement_id := string
-	(parser.Read_and_increment(9))
-
-	//agreement_id := string
+	// Filler
 	(parser.Read_and_increment(7))
 
 	//date :=
@@ -156,12 +192,16 @@ func parse_transaction(parser *parser.Parser, transaction_type int) Transaction 
 
 	reference := ""
 
+	/*
+		Amount item 3
+	*/
 	if header_amount_2.transaction_type == 21 || header_amount_2.transaction_type == 2 {
 		parse_header(parser)
 
 		transaction_number_amount_3 := string(parser.Read_and_increment(7))
 		helpers.Require(transaction_number, transaction_number_amount_3)
 
+		// free text message
 		reference = string(parser.Read_and_increment(40))
 
 		// filler
@@ -169,12 +209,17 @@ func parse_transaction(parser *parser.Parser, transaction_type int) Transaction 
 	}
 
 	return Transaction{
-		transaction_number: transaction_number,
-		amount:             *helpers.ConvertToBigInt(amount),
-		kid:                kid,
-		date:               nets_date,
-		FromAccountNumber:  FromAccountNumber,
-		reference:          reference,
+		transaction_number:      transaction_number,
+		amount:                  *helpers.ConvertToBigInt(amount),
+		kid:                     kid,
+		date:                    nets_date,
+		FromAccountNumber:       FromAccountNumber,
+		reference:               reference,
+		SerialNumber:            serial_number,
+		PartialSettlementNumber: partial_settlement_number,
+		CanProcessCreditNote:    sign == "-",
+		AgreementId:             agreement_id,
+		FormNumber:              form_number,
 	}
 }
 
@@ -194,9 +239,9 @@ func parse_header(parser *parser.Parser) AmountHeader {
 
 	return AmountHeader{
 		record:           record,
+		service_code:     service_code,
 		transaction_type: transaction_type_int,
 		record_type:      record_type,
-		service_code:     service_code,
 	}
 }
 
@@ -275,12 +320,17 @@ type TailAssignment struct {
 }
 
 type Transaction struct {
-	transaction_number string
-	kid                string
-	amount             big.Int
-	date               string
-	FromAccountNumber  string
-	reference          string
+	transaction_number      string
+	kid                     string
+	amount                  big.Int
+	date                    string
+	FromAccountNumber       string
+	reference               string
+	SerialNumber            string
+	PartialSettlementNumber string
+	CanProcessCreditNote    bool
+	AgreementId             string
+	FormNumber              string
 }
 
 type TailTransmission struct {

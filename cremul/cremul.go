@@ -12,6 +12,10 @@ type Cremul struct {
 	helpers.Caller
 }
 
+func (Cremul) Name() string {
+	return "Cremul"
+}
+
 var rollback_char = char_to_byte("'")
 
 func (Cremul) Parse(parser *parser.Parser) ([]generated.Transaction, error) {

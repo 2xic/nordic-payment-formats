@@ -7,4 +7,5 @@ import (
 
 type Caller interface {
 	Parse(*parser.Parser) ([]generated.Transaction, error)
+	Name() string
 }
