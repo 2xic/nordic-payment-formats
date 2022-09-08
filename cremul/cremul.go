@@ -46,15 +46,17 @@ func (Cremul) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 			parse_timestamp(parser)
 		} else if code == "MOA" {
 			monetary_amount, _ := parse_monetary_amount(parser)
+
 			txs[len(txs)-1].Amount = monetary_amount.amount
 			txs[len(txs)-1].Currency = monetary_amount.currency
 		} else if code == "FII" {
-			parse_business_function(parser)
+			skip_parsing(parser)
 		} else if code == "LIN" {
 			// Todo : implement this
 			parser.ReadUntil(char_to_byte("'"), rollback_char)
 		} else if code == "BUS" {
-			parse_business_function(parser)
+			business_function, _ := parse_business_function(parser)
+			txs[len(txs)-1].IsInternational = business_function.environment == "IN"
 		} else if code == "RFF" {
 			parse_reference(parser)
 		} else if code == "SEQ" {
@@ -69,16 +71,16 @@ func (Cremul) Parse(parser *parser.Parser) ([]generated.Transaction, error) {
 			parse_message_trailer(parser)
 		} else if code == "UNZ" {
 			// This does not seem to be used by nets.
-			parser.ReadUntil(char_to_byte("'"), rollback_char)
+			skip_parsing(parser)
 		} else if code == "DOC" {
 			// This does not seem to be used by nets.
-			parser.ReadUntil(char_to_byte("'"), rollback_char)
+			skip_parsing(parser)
 		} else if code == "GIS" {
 			// Todo : implement this
-			parser.ReadUntil(char_to_byte("'"), rollback_char)
+			skip_parsing(parser)
 		} else if code == "INP" {
 			// Todo : implement this
-			parser.ReadUntil(char_to_byte("'"), rollback_char)
+			skip_parsing(parser)
 		} else {
 			panic(fmt.Sprintf("UNknown code '%s' \n", code))
 		}
@@ -132,6 +134,15 @@ func parse_payer(parser *parser.Parser) (payer, error) {
 	party_qualifier := parser.ReadUntil(char_to_byte("+"), rollback_char)
 	party_identification_details := parser.ReadUntil(char_to_byte("'"), rollback_char)
 
+	// TODO, this should probably be handled in a better way, It's how cremul does an char escape.
+	if parser.IsPrevByte(char_to_byte("?")) {
+		additional := parser.ReadUntil(char_to_byte("'"), rollback_char)
+		party_identification_details = append(
+			party_identification_details,
+			additional...,
+		)
+	}
+
 	return payer{
 		party_qualifier:              string(party_qualifier),
 		party_identification_details: string(party_identification_details),
@@ -139,8 +150,20 @@ func parse_payer(parser *parser.Parser) (payer, error) {
 }
 
 func parse_business_function(parser *parser.Parser) (business_function, error) {
+	parser.ReadUntil(char_to_byte("+"), rollback_char)
+	parser.ReadUntil(char_to_byte("+"), rollback_char)
+
+	environment := parser.ReadUntil(char_to_byte("+"), rollback_char)
+
 	parser.ReadUntil(char_to_byte("'"), rollback_char)
-	return business_function{}, nil
+
+	return business_function{
+		environment: string(environment),
+	}, nil
+}
+
+func skip_parsing(parser *parser.Parser) {
+	parser.ReadUntil(char_to_byte("'"), rollback_char)
 }
 
 func parse_monetary_amount(parser *parser.Parser) (monetary_amount, error) {
@@ -246,6 +269,7 @@ type payer struct {
 }
 
 type business_function struct {
+	environment string
 }
 
 type monetary_amount struct {

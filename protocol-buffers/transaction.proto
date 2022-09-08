@@ -12,6 +12,7 @@ message Transaction {
     Payer Payer = 6;
     string Currency = 7;
     string TransactionCode = 8;
+    bool IsInternational = 9;
 }
 
 message Payer {

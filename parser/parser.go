@@ -45,6 +45,10 @@ func (parser *Parser) ReadUntil(char byte, rollback_char byte) []byte {
 	return response
 }
 
+func (parser *Parser) IsPrevByte(char byte) bool {
+	return parser.Data[parser.index - 2] == char;
+}
+
 func (parser *Parser) Done() bool {
 	return len(parser.Data) <= parser.index+1
 }
