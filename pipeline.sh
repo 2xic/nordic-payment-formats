@@ -12,6 +12,7 @@ go vet ./cmd/server
 go build ./cmd/cli
 go build ./cmd/server
 go build ./cmd/client
+go build ./cmd/rest
 
 go test github.com/2xic/nordic-payment-formats/parser
 go test github.com/2xic/nordic-payment-formats/ocr
